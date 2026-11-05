@@ -26,6 +26,8 @@ export interface Plan {
   kind: 'PPO' | 'HMO' | 'EPO' | 'POS' | 'HDHP';
   /** Sample rows are shown with a "SAMPLE DATA" badge. */
   isSample: boolean;
+  /** Where the numbers came from, e.g. "MultiCare 2027 guide". Display only. */
+  sourceNote?: string;
   /** Claimed HSA eligibility. Checked against the year's IRS HDHP limits (accounts.ts). */
   hsaEligible: boolean;
   /** Employee share of the premium, per paycheck, for each tier. */

@@ -20,6 +20,7 @@ import { Summary } from './components/Summary';
 import { BreakEvenView } from './components/BreakEvenView';
 import { Breakdown } from './components/Breakdown';
 import { TaxDataPanel } from './components/TaxDataPanel';
+import { MULTICARE_2027, multicare2027Plans, type EmploymentStatus } from '../data/multicare2027';
 
 // The chart library is the largest dependency; load it as its own chunk.
 const CostChart = lazy(() => import('./components/CostChart').then((m) => ({ default: m.CostChart })));
@@ -75,6 +76,13 @@ export function App() {
     const free = [0, 1, 2, 3, 4, 5].find((s) => !used.has(s)) ?? 0;
     setSlots((s) => ({ ...s, [p.id]: free }));
     setPlans((ps) => [...ps, p]);
+  }
+  function loadTemplate(status: EmploymentStatus) {
+    const ps = multicare2027Plans(status);
+    setPlans(ps);
+    setSlots(Object.fromEntries(ps.map((p, i) => [p.id, i])));
+    setForm((f) => ({ ...f, payPeriodsPerYear: MULTICARE_2027.payPeriodsPerYear, fsaCarryoverAllowed: MULTICARE_2027.fsaCarryoverAllowed }));
+    setOpenMath(new Set());
   }
   function resetPlans() {
     setPlans(samplePlans());
@@ -227,6 +235,7 @@ export function App() {
                 onAdd={addPlan}
                 onRemove={(id) => setPlans((ps) => ps.filter((p) => p.id !== id))}
                 onReset={resetPlans}
+                onLoadTemplate={loadTemplate}
               />
             </PageSection>
 

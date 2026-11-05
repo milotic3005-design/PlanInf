@@ -96,6 +96,16 @@ describe('app', () => {
     expect(localStorage.length).toBe(0);
   });
 
+  it('loads the MultiCare 2027 plans from the template', async () => {
+    await renderApp();
+    await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Load MultiCare 2027 plans' })));
+    for (const name of ['MyConnected Care', 'Standard PPO', 'High Deductible PPO']) expect(screen.getByDisplayValue(name)).toBeTruthy();
+    await act(async () => fireEvent.click(screen.getByRole('button', { name: 'More options' })));
+    expect((screen.getByLabelText('Paychecks per year') as HTMLSelectElement).value).toBe('24');
+    expect(screen.getByText(/Loaded from the MultiCare 2027 benefits guide/)).toBeTruthy();
+    expect(screen.queryByText('SAMPLE DATA')).toBeNull();
+  });
+
   it('makes no network requests and stores nothing', async () => {
     const calls: string[] = [];
     const realFetch = globalThis.fetch;

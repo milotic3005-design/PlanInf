@@ -6,9 +6,11 @@ import type { ReactNode } from 'react';
 import type { CoverageTier, Issue, Plan } from '../../engine/types';
 import { COVERAGE_TIERS } from '../../engine/types';
 import { MAX_PLANS, SLOT_VARS, TIER_LABEL } from '../model';
-import { Checkbox, NumberField, Select, Swatch } from './fields';
+import { Checkbox, hintCls, NumberField, Select, Swatch } from './fields';
 import { IssueList } from './Issues';
-import { Plus, RotateCcw, Trash2 } from 'lucide-react';
+import { FileSpreadsheet, Plus, RotateCcw, Trash2 } from 'lucide-react';
+import { useState } from 'react';
+import { MULTICARE_2027, MULTICARE_2027_NOTES, type EmploymentStatus } from '../../data/multicare2027';
 import { Button, Callout, Pill, TableScroll, th } from './ui';
 
 interface Props {
@@ -20,13 +22,16 @@ interface Props {
   onAdd: () => void;
   onRemove: (id: string) => void;
   onReset: () => void;
+  onLoadTemplate: (status: EmploymentStatus) => void;
 }
 
 type Row =
   | { kind: 'group'; label: string }
   | { kind: 'cell'; label: string; highlight?: boolean; render: (p: Plan, update: (patch: Partial<Plan>) => void) => ReactNode };
 
-export function PlanTable({ plans, issues, slotOf, tier, onChange, onAdd, onRemove, onReset }: Props) {
+export function PlanTable({ plans, issues, slotOf, tier, onChange, onAdd, onRemove, onReset, onLoadTemplate }: Props) {
+  const [status, setStatus] = useState<EmploymentStatus>('fullTime');
+  const fromTemplate = plans.some((p) => p.sourceNote === MULTICARE_2027.sourceNote);
   const update = (id: string) => (patch: Partial<Plan>) =>
     onChange(plans.map((p) => (p.id === id ? { ...p, ...patch, isSample: false } : p)));
   const money = (label: string, get: (p: Plan) => number, set: (p: Plan, v: number) => Partial<Plan>, opts?: { disabled?: (p: Plan) => boolean }) =>
@@ -120,6 +125,31 @@ export function PlanTable({ plans, issues, slotOf, tier, onChange, onAdd, onRemo
 
   return (
     <div className="space-y-4">
+      <div className="rounded-xl border hairline bg-surface p-4 shadow-card sm:p-5">
+        <h3 className="text-sm font-semibold text-ink">Prefill from your benefits guide</h3>
+        <p className={hintCls}>Loads the three MultiCare medical plans for 2027 (guide pages 10, 16, 18, 19) and sets 24 paychecks a year. Replaces the plans below.</p>
+        <div className="mt-3 flex flex-wrap items-end gap-3">
+          <Select
+            label="Employment status"
+            value={status}
+            onChange={setStatus}
+            options={(Object.keys(MULTICARE_2027.statuses) as EmploymentStatus[]).map((k) => ({ value: k, label: MULTICARE_2027.statuses[k] }))}
+            className="w-64"
+          />
+          <Button variant="primary" icon={FileSpreadsheet} onClick={() => onLoadTemplate(status)}>
+            Load MultiCare 2027 plans
+          </Button>
+        </div>
+      </div>
+      {fromTemplate && (
+        <Callout title="Loaded from the MultiCare 2027 benefits guide. What the model simplifies:">
+          <ul className="mt-1 list-disc space-y-1 pl-5">
+            {MULTICARE_2027_NOTES.map((n) => (
+              <li key={n}>{n}</li>
+            ))}
+          </ul>
+        </Callout>
+      )}
       {plans.some((p) => p.isSample) && (
         <Callout tone="warning" title="Columns marked SAMPLE DATA are made-up plans.">
           Replace them with the numbers from your employer's benefits guide (employee share of each premium, in-network cost sharing).
@@ -138,6 +168,7 @@ export function PlanTable({ plans, issues, slotOf, tier, onChange, onAdd, onRemo
                   <div className="flex items-center gap-1.5">
                     <Swatch color={SLOT_VARS[slotOf(p.id)]!} />
                     {p.isSample && <Pill tone="accent">SAMPLE DATA</Pill>}
+                    {!p.isSample && p.sourceNote && <Pill tone="brand">{p.sourceNote}</Pill>}
                   </div>
                   <input
                     aria-label={`Plan name (${p.name})`}
