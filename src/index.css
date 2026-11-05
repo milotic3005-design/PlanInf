@@ -1,0 +1,254 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens: "The Benefits Ledger".
+ * Same structure as CodeRx's Formulary Ledger (paper, hairline rules, serif
+ * display, hyperlegible body), in its own colors: plum ink with a burnt-orange
+ * accent. Every text/background pair was checked for WCAG 2.2 AA (≥ 4.5:1 for
+ * text): light worst 5.0:1, dark worst 5.7:1.
+ *
+ * Theme: follows the system setting; the header toggle adds .light or .dark to
+ * <html> for this visit only (nothing is stored).
+ */
+:root {
+  color-scheme: light;
+  --paper: #f6f4f8;
+  --paper-sunken: #ece8f1;
+  --surface: #fdfcfe;
+  --surface-raised: #ffffff;
+  --ink: #1c1526;
+  --ink-muted: #554b62;
+  --ink-faint: #62586e;
+  --rule: #ddd6e5;
+  --rule-strong: #b9afc6;
+  --brand: #5a2d82;
+  --brand-strong: #43205f;
+  --brand-tint: #ece2f6;
+  --brand-glow: rgb(90 45 130 / 0.12);
+  --on-brand: #f6f4f8;
+  --accent: #a3470f;
+  --accent-tint: #fbe7d9;
+  --danger: #a1271b;
+  --danger-tint: #f8e1dd;
+  --ok: #1f6b3a;
+  --ok-tint: #dff0e4;
+  --focus: #5a2d82;
+  --shadow: 0 1px 0 rgb(28 21 38 / 0.04), 0 8px 24px -12px rgb(28 21 38 / 0.18);
+
+  /* Chart series (dataviz reference palette, validated against --surface). */
+  --s1: #2a78d6;
+  --s2: #eb6834;
+  --s3: #1baf7a;
+  --s4: #eda100;
+  --s5: #e87ba4;
+  --s6: #008300;
+}
+
+:root.dark {
+  color-scheme: dark;
+  --paper: #110d16;
+  --paper-sunken: #0c0910;
+  --surface: #18131e;
+  --surface-raised: #1f1927;
+  --ink: #efeaf5;
+  --ink-muted: #b9aec7;
+  --ink-faint: #9c91aa;
+  --rule: #2d2537;
+  --rule-strong: #463b53;
+  --brand: #c8a6ee;
+  --brand-strong: #e2cdfb;
+  --brand-tint: #2b1e3c;
+  --brand-glow: rgb(200 166 238 / 0.1);
+  --on-brand: #0c0910;
+  --accent: #f2a25e;
+  --accent-tint: #3b230f;
+  --danger: #f08a7e;
+  --danger-tint: #3b1714;
+  --ok: #7bd39a;
+  --ok-tint: #12301d;
+  --focus: #e2cdfb;
+  --shadow: 0 1px 0 rgb(0 0 0 / 0.3), 0 12px 32px -16px rgb(0 0 0 / 0.6);
+  --s1: #3987e5;
+  --s2: #d95926;
+  --s3: #199e70;
+  --s4: #c98500;
+  --s5: #d55181;
+  --s6: #008300;
+}
+
+/* System dark mode, unless the visitor picked light with the toggle. Same values as .dark. */
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    color-scheme: dark;
+    --paper: #110d16;
+    --paper-sunken: #0c0910;
+    --surface: #18131e;
+    --surface-raised: #1f1927;
+    --ink: #efeaf5;
+    --ink-muted: #b9aec7;
+    --ink-faint: #9c91aa;
+    --rule: #2d2537;
+    --rule-strong: #463b53;
+    --brand: #c8a6ee;
+    --brand-strong: #e2cdfb;
+    --brand-tint: #2b1e3c;
+    --brand-glow: rgb(200 166 238 / 0.1);
+    --on-brand: #0c0910;
+    --accent: #f2a25e;
+    --accent-tint: #3b230f;
+    --danger: #f08a7e;
+    --danger-tint: #3b1714;
+    --ok: #7bd39a;
+    --ok-tint: #12301d;
+    --focus: #e2cdfb;
+    --shadow: 0 1px 0 rgb(0 0 0 / 0.3), 0 12px 32px -16px rgb(0 0 0 / 0.6);
+    --s1: #3987e5;
+    --s2: #d95926;
+    --s3: #199e70;
+    --s4: #c98500;
+    --s5: #d55181;
+    --s6: #008300;
+  }
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-sunken: var(--paper-sunken);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-faint: var(--ink-faint);
+  --color-rule: var(--rule);
+  --color-rule-strong: var(--rule-strong);
+  --color-brand: var(--brand);
+  --color-brand-strong: var(--brand-strong);
+  --color-brand-tint: var(--brand-tint);
+  --color-on-brand: var(--on-brand);
+  --color-accent: var(--accent);
+  --color-accent-tint: var(--accent-tint);
+  --color-danger: var(--danger);
+  --color-danger-tint: var(--danger-tint);
+  --color-ok: var(--ok);
+  --color-ok-tint: var(--ok-tint);
+
+  --font-sans: "Atkinson Hyperlegible Next Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Atkinson Hyperlegible Mono Variable", ui-monospace, "SFMono-Regular", monospace;
+  --font-display: "Newsreader Variable", "Iowan Old Style", Georgia, serif;
+
+  --shadow-card: var(--shadow);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 5.5rem;
+    background-color: var(--paper);
+  }
+  body {
+    background-color: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-feature-settings: "kern", "liga";
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection {
+    background: var(--brand-tint);
+    color: var(--ink);
+  }
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  a {
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 1px;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  table {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer components {
+  /* Faint ledger rules and two soft glows behind the page header. */
+  .ledger {
+    background-image:
+      radial-gradient(1200px 420px at 15% -10%, var(--brand-glow), transparent 60%),
+      radial-gradient(900px 380px at 110% 10%, color-mix(in oklab, var(--accent) 10%, transparent), transparent 55%),
+      repeating-linear-gradient(to bottom, transparent 0, transparent 31px, color-mix(in oklab, var(--rule) 55%, transparent) 31px, color-mix(in oklab, var(--rule) 55%, transparent) 32px);
+  }
+  .hairline {
+    border-color: var(--rule);
+  }
+  .code-chip {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums slashed-zero;
+    letter-spacing: 0.02em;
+  }
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+  /* Scroll shadows on wide tables, so it's clear there is more to the side. */
+  .table-scroll {
+    background:
+      linear-gradient(to right, var(--surface) 30%, transparent) left / 24px 100% no-repeat local,
+      linear-gradient(to left, var(--surface) 30%, transparent) right / 24px 100% no-repeat local,
+      radial-gradient(farthest-side at 0 50%, rgb(0 0 0 / 0.12), transparent) left / 10px 100% no-repeat scroll,
+      radial-gradient(farthest-side at 100% 50%, rgb(0 0 0 / 0.12), transparent) right / 10px 100% no-repeat scroll;
+  }
+  .rise {
+    animation: rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media print {
+  header[data-site-header],
+  footer[data-site-footer] {
+    display: none !important;
+  }
+  body {
+    background: white;
+  }
+}
+
+/* Recharts: the chart's SVG carries its own title/description; no outline on the wrapper. */
+.recharts-wrapper:focus,
+.recharts-surface:focus {
+  outline: none;
+}
+.recharts-surface:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 4px;
+}

@@ -1,0 +1,104 @@
+{
+  "taxYear": 2027,
+  "status": "partial",
+  "transcribedOn": "2026-11-04",
+  "_status": "PARTIAL. As of 2026-11-04 the IRS had not published the 2027 inflation Rev. Proc. (brackets, standard deduction, health FSA limit). The engine refuses to run a year with any null 'value' and the UI falls back to the latest complete year with a banner. Fill the nulls when the Rev. Proc. is out (IRS newsroom, usually Oct-Nov).",
+  "_howToVerify": "Same as 2026.json: confirm each value at its source, then set userVerified to true.",
+
+  "federal": {
+    "standardDeduction": {
+      "single": { "value": null, "status": "awaiting-irs-publication", "source": "irs-rp-2027-pending", "pinpoint": "Standard Deduction section", "userVerified": false },
+      "mfj":    { "value": null, "status": "awaiting-irs-publication", "source": "irs-rp-2027-pending", "pinpoint": "Standard Deduction section", "userVerified": false },
+      "mfs":    { "value": null, "status": "awaiting-irs-publication", "source": "irs-rp-2027-pending", "pinpoint": "Standard Deduction section", "userVerified": false },
+      "hoh":    { "value": null, "status": "awaiting-irs-publication", "source": "irs-rp-2027-pending", "pinpoint": "Standard Deduction section", "userVerified": false }
+    },
+    "additionalStandardDeductionAge65OrBlind": {
+      "married":   { "value": null, "status": "awaiting-irs-publication", "source": "irs-rp-2027-pending", "pinpoint": "Aged or blind", "userVerified": false },
+      "unmarried": { "value": null, "status": "awaiting-irs-publication", "source": "irs-rp-2027-pending", "pinpoint": "Aged or blind", "userVerified": false }
+    },
+    "brackets": {
+      "single": { "value": null, "printedBaseAmounts": null, "status": "awaiting-irs-publication", "source": "irs-rp-2027-pending", "pinpoint": "Tax Rate Tables, Sec. 1(j)(2)(C)", "userVerified": false },
+      "mfj":    { "value": null, "printedBaseAmounts": null, "status": "awaiting-irs-publication", "source": "irs-rp-2027-pending", "pinpoint": "Tax Rate Tables, Sec. 1(j)(2)(A)", "userVerified": false },
+      "mfs":    { "value": null, "printedBaseAmounts": null, "status": "awaiting-irs-publication", "source": "irs-rp-2027-pending", "pinpoint": "Tax Rate Tables, Sec. 1(j)(2)(D)", "userVerified": false },
+      "hoh":    { "value": null, "printedBaseAmounts": null, "status": "awaiting-irs-publication", "source": "irs-rp-2027-pending", "pinpoint": "Tax Rate Tables, Sec. 1(j)(2)(B)", "userVerified": false }
+    }
+  },
+
+  "fica": {
+    "socialSecurityRate":      { "value": 0.062,  "source": "irs-pub15-2027-draft", "pinpoint": "What's New: Social security and Medicare taxes for 2027", "statutory": "26 U.S.C. 3101(a)", "userVerified": false },
+    "socialSecurityWageBase":  { "value": 192300, "source": "irs-pub15-2027-draft", "pinpoint": "What's New (DRAFT dated Oct 14, 2026). Cross-check at ssa-cbb.", "userVerified": false },
+    "medicareRate":            { "value": 0.0145, "source": "irs-pub15-2027-draft", "pinpoint": "What's New: Social security and Medicare taxes for 2027", "statutory": "26 U.S.C. 3101(b)(1)", "userVerified": false },
+    "additionalMedicareRate":  { "value": 0.009,  "source": "usc-26-3101", "pinpoint": "26 U.S.C. 3101(b)(2); fixed in statute", "userVerified": false },
+    "additionalMedicareThreshold": {
+      "single": { "value": 200000, "source": "usc-26-3101", "pinpoint": "26 U.S.C. 3101(b)(2)(C); not indexed", "userVerified": false },
+      "hoh":    { "value": 200000, "source": "usc-26-3101", "pinpoint": "26 U.S.C. 3101(b)(2)(C); not indexed", "userVerified": false },
+      "mfj":    { "value": 250000, "source": "usc-26-3101", "pinpoint": "26 U.S.C. 3101(b)(2)(A); not indexed", "userVerified": false },
+      "mfs":    { "value": 125000, "source": "usc-26-3101", "pinpoint": "26 U.S.C. 3101(b)(2)(B); not indexed", "userVerified": false }
+    },
+    "section125ExcludedFromFicaWages": { "value": true, "source": "irs-pub15-2026", "pinpoint": "Sec. 15 table and Sec. 5 (2026 edition; rule unchanged unless the 2027 edition says otherwise)", "userVerified": false }
+  },
+
+  "hsa": {
+    "contributionLimit": {
+      "selfOnly": { "value": 4500, "source": "irs-rp-2026-24", "pinpoint": "Sec. 3.01(1)", "userVerified": false },
+      "family":   { "value": 9000, "source": "irs-rp-2026-24", "pinpoint": "Sec. 3.01(1)", "userVerified": false }
+    },
+    "catchUpAge55": { "value": 1000, "source": "usc-26-223", "pinpoint": "26 U.S.C. 223(b)(3)(B); fixed in statute, not indexed", "userVerified": false },
+    "hdhpMinDeductible": {
+      "selfOnly": { "value": 1750, "source": "irs-rp-2026-24", "pinpoint": "Sec. 3.01(3)", "userVerified": false },
+      "family":   { "value": 3500, "source": "irs-rp-2026-24", "pinpoint": "Sec. 3.01(3)", "userVerified": false }
+    },
+    "hdhpMaxOutOfPocket": {
+      "selfOnly": { "value": 8700,  "source": "irs-rp-2026-24", "pinpoint": "Sec. 3.01(3)", "userVerified": false },
+      "family":   { "value": 17400, "source": "irs-rp-2026-24", "pinpoint": "Sec. 3.01(3)", "userVerified": false }
+    }
+  },
+
+  "healthFsa": {
+    "salaryReductionLimit": { "value": null, "status": "awaiting-irs-publication", "source": "irs-rp-2027-pending", "pinpoint": "Cafeteria Plans section", "userVerified": false },
+    "maxCarryover":         { "value": null, "status": "awaiting-irs-publication", "source": "irs-rp-2027-pending", "pinpoint": "Cafeteria Plans section", "userVerified": false }
+  },
+
+  "states": {
+    "WA": {
+      "name": "Washington",
+      "incomeTax": {
+        "type": { "value": "none", "source": "wa-dor-income-tax", "pinpoint": "'Washington does not currently have an individual income tax.'", "userVerified": false },
+        "_note": "SB 6346 (2026) 9.9% tax on AGI over $1,000,000 starts tax year 2028. Not applicable to 2027."
+      },
+      "payrollTaxes": [
+        {
+          "id": "wa-pfml",
+          "name": "WA Paid Family & Medical Leave premium (employee share)",
+          "totalRate":     { "value": 0.012, "source": "wa-esd-2027-rate", "pinpoint": "'The premium rate will be 1.2%.'", "userVerified": false },
+          "employeeShare": { "value": 0.707, "source": "wa-esd-2027-rate", "pinpoint": "'employees will pay 70.7%'", "userVerified": false },
+          "wageCap":       { "value": "socialSecurityWageBase", "source": "wa-rcw-50a-10-030", "pinpoint": "RCW 50A.10.030(4)", "userVerified": false },
+          "reducedBySection125": { "value": false, "source": "wa-esd-toolkit-2026", "pinpoint": "p. 17 'Gross wages' (2026 toolkit). VERIFY with ESD.", "userVerified": false }
+        },
+        {
+          "id": "wa-cares",
+          "name": "WA Cares Fund long-term care premium",
+          "totalRate":     { "value": 0.0058, "status": "assumed-unchanged-verify", "source": "wa-rcw-50b-04-080", "pinpoint": "Rate set by Pension Funding Council from 2026, no greater than 0.58%. No 2027 rate notice found on 2026-11-04.", "userVerified": false },
+          "employeeShare": { "value": 1.0, "source": "wa-rcw-50b-04-080", "pinpoint": "Employee-paid", "userVerified": false },
+          "wageCap":       { "value": null, "source": "wa-esd-toolkit-2026", "pinpoint": "No cap", "userVerified": false },
+          "reducedBySection125": { "value": false, "source": "wa-esd-toolkit-2026", "pinpoint": "p. 17 'Gross wages'. VERIFY with ESD.", "userVerified": false }
+        }
+      ]
+    }
+  },
+
+  "sources": {
+    "irs-rp-2027-pending":  { "title": "2027 inflation-adjustment Rev. Proc. (not yet published on 2026-11-04)", "publisher": "IRS", "url": "https://www.irs.gov/newsroom", "retrieved": null, "readBy": "Checked IRS newsroom and IRBs 2026-44 and 2026-45 on 2026-11-04; not found" },
+    "irs-rp-2026-24":       { "title": "Rev. Proc. 2026-24 (2027 HSA and HDHP amounts), IRB 2026-25", "publisher": "IRS", "url": "https://www.irs.gov/pub/irs-drop/rp-26-24.pdf", "retrieved": "2026-11-04", "readBy": "PDF text extracted and checked" },
+    "irs-pub15-2027-draft": { "title": "Publication 15 (2027) DRAFT, dated Oct 14, 2026", "publisher": "IRS", "url": "https://www.irs.gov/pub/irs-dft/p15--dft.pdf", "retrieved": "2026-11-04", "readBy": "PDF text extracted and checked. Draft: replace with the final edition when it is posted." },
+    "irs-pub15-2026":       { "title": "Publication 15 (2026), (Circular E) Employer's Tax Guide", "publisher": "IRS", "url": "https://www.irs.gov/pub/irs-pdf/p15.pdf", "retrieved": "2026-11-04", "readBy": "PDF text extracted and checked" },
+    "ssa-cbb":              { "title": "Contribution and Benefit Base (SSA)", "publisher": "SSA", "url": "https://www.ssa.gov/oact/cola/cbb.html", "retrieved": null, "readBy": "Automated fetch refused (HTTP 403). Open in a browser to confirm $192,300." },
+    "usc-26-3101":          { "title": "26 U.S.C. 3101, Rate of tax (FICA, employee)", "publisher": "U.S. Code", "url": "https://www.law.cornell.edu/uscode/text/26/3101", "retrieved": null, "readBy": "NOT fetched this session; open to confirm" },
+    "usc-26-223":           { "title": "26 U.S.C. 223, Health savings accounts", "publisher": "U.S. Code", "url": "https://www.law.cornell.edu/uscode/text/26/223", "retrieved": null, "readBy": "NOT fetched this session; open to confirm" },
+    "wa-dor-income-tax":    { "title": "Income tax (Washington Department of Revenue)", "publisher": "WA DOR", "url": "https://dor.wa.gov/taxes-rates/income-tax", "retrieved": "2026-11-04", "readBy": "Search-result excerpt only" },
+    "wa-esd-2027-rate":     { "title": "Paid Family & Medical Leave premium rate increases to 1.2% in 2027 (news release, Oct 16, 2026)", "publisher": "WA Employment Security Dept.", "url": "https://esd.wa.gov/about-us/news-release/2026/paid-family-medical-leave-premium-rate-increases-12-2027", "retrieved": "2026-11-04", "readBy": "Page read" },
+    "wa-esd-toolkit-2026":  { "title": "Paid Leave & WA Cares Employer Wage Reporting and Premiums Toolkit v25.1 (June 2026)", "publisher": "WA Employment Security Dept.", "url": "https://paidleave.wa.gov/app/uploads/2021/12/Employer-Wage-Reporting-and-Premiums-Toolkit-v25.1-2026.06.26.pdf", "retrieved": "2026-11-04", "readBy": "PDF text extracted and checked" },
+    "wa-rcw-50a-10-030":    { "title": "RCW 50A.10.030 (PFML premiums)", "publisher": "WA Legislature", "url": "https://app.leg.wa.gov/RCW/default.aspx?cite=50A.10.030", "retrieved": "2026-11-04", "readBy": "Page summary only" },
+    "wa-rcw-50b-04-080":    { "title": "RCW 50B.04.080 (WA Cares premium)", "publisher": "WA Legislature", "url": "https://app.leg.wa.gov/RCW/default.aspx?cite=50B.04.080", "retrieved": "2026-11-04", "readBy": "Page summary only" }
+  }
+}

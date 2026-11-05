@@ -1,0 +1,150 @@
+{
+  "taxYear": 2026,
+  "status": "complete",
+  "transcribedOn": "2026-11-04",
+  "_howToVerify": "Each parameter has value, source (a key in 'sources'), pinpoint (where in that source), and userVerified. Claude transcribed every value from the cited source on 2026-11-04. Open the source, confirm the number, then set userVerified to true. The app shows an 'unverified' badge next to any number whose inputs include an unverified parameter.",
+
+  "federal": {
+    "standardDeduction": {
+      "single": { "value": 16100, "source": "irs-rp-2025-32", "pinpoint": "Sec. 4.14(1)", "userVerified": false },
+      "mfj":    { "value": 32200, "source": "irs-rp-2025-32", "pinpoint": "Sec. 4.14(1)", "userVerified": false },
+      "mfs":    { "value": 16100, "source": "irs-rp-2025-32", "pinpoint": "Sec. 4.14(1)", "userVerified": false },
+      "hoh":    { "value": 24150, "source": "irs-rp-2025-32", "pinpoint": "Sec. 4.14(1)", "userVerified": false }
+    },
+    "additionalStandardDeductionAge65OrBlind": {
+      "married":   { "value": 1650, "source": "irs-rp-2025-32", "pinpoint": "Sec. 4.14(3)", "userVerified": false },
+      "unmarried": { "value": 2050, "source": "irs-rp-2025-32", "pinpoint": "Sec. 4.14(3)", "userVerified": false }
+    },
+    "brackets": {
+      "_format": "Each row: rate applies to taxable income over 'over' up to the next row's 'over'. Matches the IRS 'Over $X but not over $Y' tables. Unit test checks that derived base amounts equal the IRS-printed '$N plus' amounts.",
+      "single": {
+        "value": [
+          { "over": 0,      "rate": 0.10 },
+          { "over": 12400,  "rate": 0.12 },
+          { "over": 50400,  "rate": 0.22 },
+          { "over": 105700, "rate": 0.24 },
+          { "over": 201775, "rate": 0.32 },
+          { "over": 256225, "rate": 0.35 },
+          { "over": 640600, "rate": 0.37 }
+        ],
+        "printedBaseAmounts": [1240, 5800, 17966, 41024, 58448, 192979.25],
+        "source": "irs-rp-2025-32", "pinpoint": "Sec. 4.01, Table 3", "userVerified": false
+      },
+      "mfj": {
+        "value": [
+          { "over": 0,      "rate": 0.10 },
+          { "over": 24800,  "rate": 0.12 },
+          { "over": 100800, "rate": 0.22 },
+          { "over": 211400, "rate": 0.24 },
+          { "over": 403550, "rate": 0.32 },
+          { "over": 512450, "rate": 0.35 },
+          { "over": 768700, "rate": 0.37 }
+        ],
+        "printedBaseAmounts": [2480, 11600, 35932, 82048, 116896, 206583.50],
+        "source": "irs-rp-2025-32", "pinpoint": "Sec. 4.01, Table 1", "userVerified": false
+      },
+      "mfs": {
+        "value": [
+          { "over": 0,      "rate": 0.10 },
+          { "over": 12400,  "rate": 0.12 },
+          { "over": 50400,  "rate": 0.22 },
+          { "over": 105700, "rate": 0.24 },
+          { "over": 201775, "rate": 0.32 },
+          { "over": 256225, "rate": 0.35 },
+          { "over": 384350, "rate": 0.37 }
+        ],
+        "printedBaseAmounts": [1240, 5800, 17966, 41024, 58448, 103291.75],
+        "source": "irs-rp-2025-32", "pinpoint": "Sec. 4.01, Table 4", "userVerified": false
+      },
+      "hoh": {
+        "value": [
+          { "over": 0,      "rate": 0.10 },
+          { "over": 17700,  "rate": 0.12 },
+          { "over": 67450,  "rate": 0.22 },
+          { "over": 105700, "rate": 0.24 },
+          { "over": 201750, "rate": 0.32 },
+          { "over": 256200, "rate": 0.35 },
+          { "over": 640600, "rate": 0.37 }
+        ],
+        "printedBaseAmounts": [1770, 7740, 16155, 39207, 56631, 191171],
+        "source": "irs-rp-2025-32", "pinpoint": "Sec. 4.01, Table 2", "userVerified": false
+      }
+    }
+  },
+
+  "fica": {
+    "socialSecurityRate":      { "value": 0.062,  "source": "irs-pub15-2026", "pinpoint": "What's New: Social security and Medicare taxes for 2026", "statutory": "26 U.S.C. 3101(a)", "userVerified": false },
+    "socialSecurityWageBase":  { "value": 184500, "source": "irs-pub15-2026", "pinpoint": "What's New: Social security and Medicare taxes for 2026", "userVerified": false },
+    "medicareRate":            { "value": 0.0145, "source": "irs-pub15-2026", "pinpoint": "What's New: Social security and Medicare taxes for 2026", "statutory": "26 U.S.C. 3101(b)(1)", "userVerified": false },
+    "additionalMedicareRate":  { "value": 0.009,  "source": "irs-pub15-2026", "pinpoint": "Sec. 9, Additional Medicare Tax withholding", "statutory": "26 U.S.C. 3101(b)(2)", "userVerified": false },
+    "additionalMedicareThreshold": {
+      "_note": "Liability thresholds by filing status. Fixed in statute, not indexed for inflation. Employers withhold above $200,000 regardless of filing status (Pub 15 Sec. 9); the true liability is settled on Form 8959.",
+      "single": { "value": 200000, "source": "usc-26-3101", "pinpoint": "26 U.S.C. 3101(b)(2)(C)", "userVerified": false },
+      "hoh":    { "value": 200000, "source": "usc-26-3101", "pinpoint": "26 U.S.C. 3101(b)(2)(C)", "userVerified": false },
+      "mfj":    { "value": 250000, "source": "usc-26-3101", "pinpoint": "26 U.S.C. 3101(b)(2)(A)", "userVerified": false },
+      "mfs":    { "value": 125000, "source": "usc-26-3101", "pinpoint": "26 U.S.C. 3101(b)(2)(B)", "userVerified": false }
+    },
+    "section125ExcludedFromFicaWages": { "value": true, "source": "irs-pub15-2026", "pinpoint": "Sec. 15 table, 'Cafeteria plan benefits under section 125'; Sec. 5, 'Health savings accounts (HSAs)'", "userVerified": false }
+  },
+
+  "hsa": {
+    "contributionLimit": {
+      "selfOnly": { "value": 4400, "source": "irs-rp-2025-19", "pinpoint": "Sec. 2.01(1)", "userVerified": false },
+      "family":   { "value": 8750, "source": "irs-rp-2025-19", "pinpoint": "Sec. 2.01(1)", "userVerified": false }
+    },
+    "catchUpAge55": { "value": 1000, "source": "usc-26-223", "pinpoint": "26 U.S.C. 223(b)(3)(B); fixed in statute, not indexed", "userVerified": false },
+    "hdhpMinDeductible": {
+      "selfOnly": { "value": 1700, "source": "irs-rp-2025-19", "pinpoint": "Sec. 2.01(2)", "userVerified": false },
+      "family":   { "value": 3400, "source": "irs-rp-2025-19", "pinpoint": "Sec. 2.01(2)", "userVerified": false }
+    },
+    "hdhpMaxOutOfPocket": {
+      "selfOnly": { "value": 8500,  "source": "irs-rp-2025-19", "pinpoint": "Sec. 2.01(2)", "userVerified": false },
+      "family":   { "value": 17000, "source": "irs-rp-2025-19", "pinpoint": "Sec. 2.01(2)", "userVerified": false }
+    }
+  },
+
+  "healthFsa": {
+    "salaryReductionLimit": { "value": 3400, "source": "irs-rp-2025-32", "pinpoint": "Sec. 4.15", "userVerified": false },
+    "maxCarryover":         { "value": 680,  "source": "irs-rp-2025-32", "pinpoint": "Sec. 4.15 (only if the employer's plan allows carryover)", "userVerified": false }
+  },
+
+  "states": {
+    "WA": {
+      "name": "Washington",
+      "incomeTax": {
+        "type": { "value": "none", "source": "wa-dor-income-tax", "pinpoint": "'Washington does not currently have an individual income tax.'", "userVerified": false },
+        "_note": "SB 6346 (2026) creates a 9.9% tax on AGI over $1,000,000 starting tax year 2028. It does not apply to 2026 and is not modeled."
+      },
+      "payrollTaxes": [
+        {
+          "id": "wa-pfml",
+          "name": "WA Paid Family & Medical Leave premium (employee share)",
+          "totalRate":     { "value": 0.0113, "source": "wa-esd-toolkit-2026", "pinpoint": "Calculating premiums (2026 rate 1.13%)", "userVerified": false },
+          "employeeShare": { "value": 0.7143, "source": "wa-esd-toolkit-2026", "pinpoint": "'Gross wages x 0.0113 x 0.7143 = Employee Share'", "userVerified": false },
+          "wageCap":       { "value": "socialSecurityWageBase", "source": "wa-rcw-50a-10-030", "pinpoint": "RCW 50A.10.030(4): capped at the Social Security taxable maximum", "userVerified": false },
+          "reducedBySection125": { "value": false, "source": "wa-esd-toolkit-2026", "pinpoint": "p. 17, 'Gross wages': only tips excluded; no exclusion for pre-tax deductions listed. VERIFY with ESD: the toolkit does not mention Section 125 explicitly.", "userVerified": false }
+        },
+        {
+          "id": "wa-cares",
+          "name": "WA Cares Fund long-term care premium",
+          "totalRate":     { "value": 0.0058, "source": "wa-rcw-50b-04-080", "pinpoint": "RCW 50B.04.080: 0.58% of wages", "userVerified": false },
+          "employeeShare": { "value": 1.0,    "source": "wa-rcw-50b-04-080", "pinpoint": "Employee-paid", "userVerified": false },
+          "wageCap":       { "value": null,   "source": "wa-esd-toolkit-2026", "pinpoint": "No cap, unlike Paid Leave", "userVerified": false },
+          "reducedBySection125": { "value": false, "source": "wa-esd-toolkit-2026", "pinpoint": "p. 17: Paid Leave and WA Cares use the same gross-wages definition. VERIFY as above.", "userVerified": false }
+        }
+      ]
+    }
+  },
+
+  "sources": {
+    "irs-rp-2025-32":  { "title": "Rev. Proc. 2025-32 (2026 inflation-adjusted items)", "publisher": "IRS", "url": "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf", "retrieved": "2026-11-04", "readBy": "PDF text extracted and checked" },
+    "irs-rp-2025-19":  { "title": "Rev. Proc. 2025-19 (2026 HSA and HDHP amounts)", "publisher": "IRS", "url": "https://www.irs.gov/pub/irs-drop/rp-25-19.pdf", "retrieved": "2026-11-04", "readBy": "PDF text extracted and checked" },
+    "irs-pub15-2026":  { "title": "Publication 15 (2026), (Circular E) Employer's Tax Guide", "publisher": "IRS", "url": "https://www.irs.gov/pub/irs-pdf/p15.pdf", "retrieved": "2026-11-04", "readBy": "PDF text extracted and checked" },
+    "usc-26-3101":     { "title": "26 U.S.C. 3101, Rate of tax (FICA, employee)", "publisher": "U.S. Code", "url": "https://www.law.cornell.edu/uscode/text/26/3101", "retrieved": null, "readBy": "NOT fetched this session; statutory value cited from the statute. Open the link to confirm." },
+    "usc-26-223":      { "title": "26 U.S.C. 223, Health savings accounts", "publisher": "U.S. Code", "url": "https://www.law.cornell.edu/uscode/text/26/223", "retrieved": null, "readBy": "NOT fetched this session; statutory value cited from the statute. Open the link to confirm." },
+    "wa-dor-income-tax": { "title": "Income tax (Washington Department of Revenue)", "publisher": "WA DOR", "url": "https://dor.wa.gov/taxes-rates/income-tax", "retrieved": "2026-11-04", "readBy": "Search-result excerpt only" },
+    "wa-esd-toolkit-2026": { "title": "Paid Leave & WA Cares Employer Wage Reporting and Premiums Toolkit v25.1 (June 2026)", "publisher": "WA Employment Security Dept.", "url": "https://paidleave.wa.gov/app/uploads/2021/12/Employer-Wage-Reporting-and-Premiums-Toolkit-v25.1-2026.06.26.pdf", "retrieved": "2026-11-04", "readBy": "PDF text extracted and checked" },
+    "wa-rcw-50a-10-030": { "title": "RCW 50A.10.030 (PFML premiums)", "publisher": "WA Legislature", "url": "https://app.leg.wa.gov/RCW/default.aspx?cite=50A.10.030", "retrieved": "2026-11-04", "readBy": "Page summary only" },
+    "wa-rcw-50b-04-080": { "title": "RCW 50B.04.080 (WA Cares premium)", "publisher": "WA Legislature", "url": "https://app.leg.wa.gov/RCW/default.aspx?cite=50B.04.080", "retrieved": "2026-11-04", "readBy": "Page summary only" }
+  }
+}
