@@ -6,7 +6,7 @@
 |---|---|
 | Stage | 1 of 4 (Spec). No engine or UI code yet. |
 | Date | 2026-11-04 |
-| Tax data | [`src/config/tax-years/2026.json`](../src/config/tax-years/2026.json) (complete), [`2027.json`](../src/config/tax-years/2027.json) (partial: IRS has not published 2027 brackets) |
+| Tax data | [`src/config/tax-years/2026.json`](../src/config/tax-years/2026.json) (complete), [`2027.json`](../src/config/tax-years/2027.json) (complete since 2026-11-05, see §14) |
 | Sample plans | Every plan in this document is **sample data**, not a real employer's plan. |
 
 ---
@@ -274,7 +274,7 @@ Every value below is in the JSON config with a source, a pinpoint, and `userVeri
 
 **Transcription check.** For all four 2026 filing statuses, the base amounts I computed from these brackets match the IRS-printed "$N plus" amounts (for example, Single 1,240 / 5,800 / 17,966 / 41,024 / 58,448 / 192,979.25). Stage 2 makes this a unit test.
 
-**2027 status.** On 2026-11-04 the IRS newsroom and Internal Revenue Bulletins 2026-44 and 2026-45 did not yet contain the 2027 inflation Rev. Proc. The 12 values that depend on it are `null` in `2027.json`, and the loader refuses a year that has nulls (see Q1).
+**2027 status.** The table above is the state at Stage 1 (2026-11-04), before the IRS published. The 12 pending values were filled on 2026-11-05 from Rev. Proc. 2026-35 (see §14). The JSON files are the source of truth.
 
 Source links:
 - Rev. Proc. 2025-32: <https://www.irs.gov/pub/irs-drop/rp-25-32.pdf>
@@ -475,3 +475,16 @@ Vite + React + TypeScript + Tailwind CSS, Vitest for tests, Recharts for charts.
 | Accessibility | axe-core: 0 violations in a real browser (light and dark, every panel open, color contrast included) and in the jsdom app test. The chart's SVG carries its own title/description and supports arrow keys. A debounced polite live region announces the cheapest plan. Warnings use an icon and a word, not only color. |
 | Tests | 90 (was 66), including a 300-case seeded random-input test and whole-app tests. |
 | Build | The chart library is lazy-loaded as its own chunk (main 323 kB, chart 377 kB). |
+
+---
+
+## 14. After v1: 2027 values and the HSA simulator
+
+| Area | Change |
+|---|---|
+| 2027 tax values | Filled from Rev. Proc. 2026-35 (brackets §3.01, standard deduction §3.15, FSA §3.16): single standard deduction $16,600, FSA limit $3,500, carryover $700. 2027 is now the default year. The copy read still shows "[Release Date, 2026]" placeholders in its Section 1, so recheck it against the Internal Revenue Bulletin version. |
+| Why it mattered | The MultiCare template holds 2027 plans. Under 2026 values the HSA room was $4,400 − $800 = $3,600. Under 2027 values it is $4,500 − $800 = $3,700, matching the guide's page 18. The template now selects tax year 2027. |
+| HSA simulator | `src/engine/hsaSim.ts`. For one HSA plan and scenario: limits, net cost at $0 / current / max, tax saved, take-home change, `hsaAfterCare = H + E − OOP`, and the smallest contribution that makes the plan cheapest (bisection on net cost). It runs through `buildPlanContext`, so it can't drift from the main results. |
+| HSA math trace | The Show math step now prints the cap: `min(your amount, IRS limit + catch-up − employer HSA)`. |
+| Removed | `hsaHints` (the "no HSA contribution" callout). The simulator replaces it. |
+| Contrast fix | Plan names on the break-even bar now sit on a light chip. White text on the series colors was below 4.5:1 (axe). |

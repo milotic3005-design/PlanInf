@@ -122,5 +122,3 @@ export const FILING_LABEL: Record<FilingStatus, string> = {
 
 /** Categorical slot CSS variables, in fixed order. Color follows the plan, never its rank. */
 export const SLOT_VARS = ['var(--s1)', 'var(--s2)', 'var(--s3)', 'var(--s4)', 'var(--s5)', 'var(--s6)'] as const;
-/** Ink for text set inside a slot fill: near-black on yellow (slot 4), white otherwise. */
-export const SLOT_INK = ['#ffffff', '#ffffff', '#ffffff', '#0b0b0b', '#ffffff', '#ffffff'] as const;

@@ -279,13 +279,6 @@ export interface CheapestSegment {
   planId: string;
 }
 
-/** Shown when the HSA amount is blank/0 but an HSA plan is on the table (SPEC Q4). */
-export interface HsaHint {
-  planId: string;
-  maxContribution: number;
-  taxSavingsAtMax: number;
-}
-
 export interface ComparisonResult {
   taxYear: number;
   results: PlanScenarioResult[];
@@ -297,7 +290,6 @@ export interface ComparisonResult {
   chartVisits: number;
   curve: CurvePoint[];
   cheapestBySpend: CheapestSegment[];
-  hsaHints: HsaHint[];
   issues: Issue[];
   /** Config paths you have not yet marked userVerified. */
   unverifiedParams: string[];

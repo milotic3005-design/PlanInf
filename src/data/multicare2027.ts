@@ -19,6 +19,8 @@ export const MULTICARE_2027 = {
   id: 'multicare-2027',
   title: 'MultiCare 2027 benefits guide',
   sourceNote: 'MultiCare 2027 guide',
+  /** These are 2027 plans, so they use 2027 tax values and HSA limits. */
+  taxYear: 2027,
   /** p. 16: deducted over the first two paychecks of each month. */
   payPeriodsPerYear: 24 as const,
   /** p. 19: the Health Care FSA allows a rollover (up to $680). */
@@ -116,6 +118,7 @@ export const MULTICARE_2027_NOTES = [
   'Monthly premiums from page 16 are split over 24 paychecks, the way MultiCare deducts them, so each paycheck shows half the monthly rate.',
   "MyConnected Care's deductible applies to ER visits only, so it is entered as $0 for ordinary care. ER copays ($250 to $500) and the ER deductible aren't modeled.",
   'Copay per visit uses the primary care copay. Specialty, mental health, and urgent care copays are higher on some plans. Raise the copay if most of your visits are specialty.',
+  'The guide caps the Health Care FSA at $3,400 with a $680 rollover. It was printed before the IRS set the 2027 limits ($3,500 and $700), so the app allows the IRS amounts. Stay within the guide unless MultiCare updates it.',
   "Prescription drug costs, the executive surcharge (+$50/+$100 a month, and no MultiCare HSA money), and the Premium Assistance Program ($5/$15 a month for qualifying MyConnected Care members) aren't included. Edit the premiums if they apply to you.",
   "Domestic partner coverage is after-tax unless your partner is your tax dependent. If so, turn off pre-tax premiums under More options.",
   'Whether family deductibles are embedded or aggregate isn’t stated in the guide. The Standard PPO is set to embedded; the High Deductible PPO must be aggregate to stay HSA-eligible. Check each plan’s Summary of Benefits and Coverage.',

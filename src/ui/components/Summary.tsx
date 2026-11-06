@@ -103,19 +103,6 @@ export function Summary({ result, plans, scenarios, scenarioId, setScenarioId, s
         </Callout>
       )}
 
-      {result.hsaHints.length > 0 && (
-        <Callout tone="info" title="You entered no HSA contribution.">
-          {result.hsaHints.map((h) => (
-            <p key={h.planId}>
-              With {name(h.planId)}, contributing the most allowed ({fmtMoney0(h.maxContribution)}) through payroll would save about{' '}
-              <span className="font-semibold text-ink">{fmtMoney0(h.taxSavingsAtMax)}</span> in taxes and lower its net cost by the same amount. The money
-              stays yours.
-              {result.issues.some((i) => i.code === 'AGE_65_MEDICARE') && ' This applies only if you are not enrolled in Medicare.'}
-            </p>
-          ))}
-        </Callout>
-      )}
-
       <IssueList issues={result.issues.filter((i) => !i.planId)} label="Notes about your inputs" />
       {result.issues.some((i) => i.planId && i.severity !== 'info') && (
         <Callout tone="warning" title="Some plan numbers need a look.">

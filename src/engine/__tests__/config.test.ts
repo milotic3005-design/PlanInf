@@ -42,9 +42,13 @@ describe('tax config loader', () => {
     expect(p.some((m) => m.includes('federal.brackets.single') && m.includes('Check the transcription'))).toBe(true);
   });
 
-  it('T17: refuses 2027 while the IRS has not published its brackets, deduction, and FSA limit', () => {
-    const p = problemsOf(raw2027);
-    expect(p).toHaveLength(12);
+  it('T17: refuses a year with an unpublished (null) value', () => {
+    const raw = rawCopy();
+    raw.federal.standardDeduction.single = { value: null, status: 'awaiting-irs-publication', source: 'irs-rp-2025-32', pinpoint: 'x', userVerified: false };
+    raw.healthFsa.maxCarryover.value = null;
+    raw.healthFsa.maxCarryover.status = 'awaiting-irs-publication';
+    const p = problemsOf(raw);
+    expect(p).toHaveLength(2);
     expect(p.every((m) => m.includes('awaiting-irs-publication'))).toBe(true);
   });
 
@@ -69,23 +73,33 @@ describe('tax config loader', () => {
     expect(problemsOf(raw).some((m) => m.startsWith('fica.socialSecurityRate: expected a rate'))).toBe(true);
   });
 
-  it('2027 values that are published match Rev. Proc. 2026-24, Pub 15 (2027 draft), and ESD', () => {
-    const r = raw2027 as any;
-    expect(r.hsa.contributionLimit.selfOnly.value).toBe(4500);
-    expect(r.hsa.contributionLimit.family.value).toBe(9000);
-    expect(r.hsa.hdhpMinDeductible.selfOnly.value).toBe(1750);
-    expect(r.hsa.hdhpMaxOutOfPocket.family.value).toBe(17400);
-    expect(r.fica.socialSecurityWageBase.value).toBe(192300);
-    expect(r.states.WA.payrollTaxes[0].totalRate.value).toBe(0.012);
+  it('T1: 2027 loads, and its brackets reproduce the base amounts printed in Rev. Proc. 2026-35', () => {
+    const cfg = resolveTaxConfig(raw2027);
+    expect(cfg.taxYear).toBe(2027);
+    expect(Object.values(cfg.refs)).toHaveLength(37);
+    const json = raw2027 as unknown as { federal: { brackets: Record<string, { printedBaseAmounts: number[] }> } };
+    for (const fs of FILING_STATUSES) expect(derivedBaseAmounts(cfg.federal.brackets[fs]), fs).toEqual(json.federal.brackets[fs]!.printedBaseAmounts);
   });
 
-  it('registry: 2026 usable, 2027 not; default year is 2026', () => {
+  it('2027 values match Rev. Proc. 2026-35, Rev. Proc. 2026-24, Pub 15 (2027 draft), and ESD', () => {
+    const cfg = resolveTaxConfig(raw2027);
+    expect(cfg.federal.standardDeduction).toEqual({ single: 16600, mfj: 33200, mfs: 16600, hoh: 24925 });
+    expect(cfg.federal.additionalStandardDeductionAge65OrBlind).toEqual({ married: 1700, unmarried: 2100 });
+    expect(cfg.healthFsa).toEqual({ salaryReductionLimit: 3500, maxCarryover: 700 });
+    expect(cfg.hsa.contributionLimit).toEqual({ selfOnly: 4500, family: 9000 });
+    expect(cfg.hsa.hdhpMinDeductible).toEqual({ selfOnly: 1750, family: 3500 });
+    expect(cfg.hsa.hdhpMaxOutOfPocket.family).toBe(17400);
+    expect(cfg.fica.socialSecurityWageBase).toBe(192300);
+    expect(cfg.states.WA!.payrollTaxes[0]!.totalRate).toBe(0.012);
+  });
+
+  it('registry: 2026 and 2027 are both usable; the default is the newest', () => {
     const years = loadTaxYears();
     expect(years.map((y) => [y.year, y.usable])).toEqual([
       [2026, true],
-      [2027, false],
+      [2027, true],
     ]);
-    expect(latestUsableYear(years)?.year).toBe(2026);
+    expect(latestUsableYear(years)?.year).toBe(2027);
   });
 
   it('lists every parameter as unverified until you flip userVerified', () => {

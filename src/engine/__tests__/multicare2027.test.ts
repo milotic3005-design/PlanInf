@@ -4,7 +4,11 @@ import { multicare2027Plans, MULTICARE_2027 } from '../../data/multicare2027';
 import { buildScenarios, compare } from '../compare';
 import { buildPlanContext } from '../netCost';
 import { COVERAGE_TIERS } from '../types';
-import { cfg2026, hh } from './fixtures';
+import { resolveTaxConfig } from '../config';
+import raw2027 from '../../config/tax-years/2027.json';
+import { hh } from './fixtures';
+
+const cfg2027 = resolveTaxConfig(raw2027);
 
 const ft = multicare2027Plans('fullTime');
 const pt = multicare2027Plans('partTime');
@@ -31,18 +35,18 @@ describe('MultiCare 2027 template', () => {
     expect(byId(ft, 'mc-myconnected')).toMatchObject({ oopMax: { individual: 3000, family: 6000 }, coinsurance: 0.1, copayPerVisit: 20 });
   });
 
-  it('the High Deductible PPO passes the IRS HDHP test for every tier, so its HSA money counts', () => {
+  it('the High Deductible PPO passes the 2027 IRS HDHP test for every tier, so its HSA money counts', () => {
     for (const tier of COVERAGE_TIERS) {
-      const c = buildPlanContext(byId(ft, 'mc-hdhp'), h24({ coverageTier: tier }), cfg2026);
+      const c = buildPlanContext(byId(ft, 'mc-hdhp'), h24({ coverageTier: tier, taxYear: 2027 }), cfg2027);
       expect(c.issues.filter((i) => i.severity === 'error'), tier).toEqual([]);
       expect(c.employerHsa, tier).toBe(tier === 'self' ? 800 : 1600);
     }
   });
 
-  it('compares cleanly for every tier and status (no errors or warnings)', () => {
+  it('compares cleanly for every tier and status under 2027 tax values (no errors or warnings)', () => {
     for (const plans of [ft, pt]) {
       for (const tier of COVERAGE_TIERS) {
-        const res = compare({ household: h24({ coverageTier: tier }), plans, scenarios: buildScenarios({ allowedSpend: 3000, copayVisits: 4 }), config: cfg2026 });
+        const res = compare({ household: h24({ coverageTier: tier, taxYear: 2027 }), plans, scenarios: buildScenarios({ allowedSpend: 3000, copayVisits: 4 }), config: cfg2027 });
         const bad = res.issues.filter((i) => i.severity !== 'info');
         expect(bad.map((i) => i.code), tier).toEqual([]);
         expect(res.results.every((r) => Number.isFinite(r.netCost))).toBe(true);

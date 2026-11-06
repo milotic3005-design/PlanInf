@@ -3,7 +3,7 @@ import { buildScenarios, compare } from '../compare';
 import { explainScenario } from '../explain';
 import { fmtMoney0 } from '../money';
 import { SAMPLE_PLANS } from '../../data/samplePlans';
-import { cfg2026, hh, WORKED } from './fixtures';
+import { cfg2026, WORKED } from './fixtures';
 
 const scenarios = buildScenarios({ allowedSpend: 3000, copayVisits: 4 });
 const result = compare({ household: WORKED, plans: SAMPLE_PLANS, scenarios, config: cfg2026 });
@@ -59,14 +59,6 @@ describe('why this plan wins', () => {
     const twin = { ...SAMPLE_PLANS[0]!, id: 'twin', name: 'Twin PPO' };
     const tie = compare({ household: WORKED, plans: [SAMPLE_PLANS[0]!, twin], scenarios, config: cfg2026 });
     expect(explainScenario(tie, [SAMPLE_PLANS[0]!, twin], sc('expected')).headline).toMatch(/cost about the same/);
-  });
-
-  it('HSA hint appears only when no HSA amount is entered', () => {
-    expect(result.hsaHints).toEqual([]);
-    const blank = compare({ household: hh({ hsaContribution: 0 }), plans: SAMPLE_PLANS, scenarios, config: cfg2026 });
-    expect(blank.hsaHints).toHaveLength(1);
-    expect(blank.hsaHints[0]!.maxContribution).toBe(3900); // 4,400 − 500 employer
-    expect(blank.hsaHints[0]!.taxSavingsAtMax).toBeCloseTo(3900 * 0.2965, 6);
   });
 
   it('whole-dollar format rounds half away from zero', () => {

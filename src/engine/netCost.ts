@@ -94,15 +94,19 @@ export function netCostAt(ctx: PlanContext, spend: number, visits: number, perVi
   return { oop, forfeit, netCost: ctx.fixedCost + oop.oop + forfeit };
 }
 
-export function evaluateScenario(ctx: PlanContext, sc: Scenario, h: Household, cfg: ResolvedTaxConfig): PlanScenarioResult {
-  const n = sc.copayVisits;
-  const a = h.allowedPerVisit;
-  const oopDetail =
+/** Out-of-pocket, forfeit, and net cost for a scenario, including High use (OOP max reached). */
+export function scenarioCost(ctx: PlanContext, sc: Scenario, perVisit: number) {
+  const oop =
     sc.allowedSpend === 'reachOopMax'
-      ? outOfPocketAtMax(ctx.costShare, n, a)
-      : outOfPocket(ctx.costShare, sc.allowedSpend, n, a);
-  const forfeit = fsaForfeit(ctx.fsaElection, oopDetail.oop, ctx.fsaCarryover);
-  const netCost = ctx.fixedCost + oopDetail.oop + forfeit;
+      ? outOfPocketAtMax(ctx.costShare, sc.copayVisits, perVisit)
+      : outOfPocket(ctx.costShare, sc.allowedSpend, sc.copayVisits, perVisit);
+  const forfeit = fsaForfeit(ctx.fsaElection, oop.oop, ctx.fsaCarryover);
+  return { oop, forfeit, netCost: ctx.fixedCost + oop.oop + forfeit };
+}
+
+export function evaluateScenario(ctx: PlanContext, sc: Scenario, h: Household, cfg: ResolvedTaxConfig): PlanScenarioResult {
+  const a = h.allowedPerVisit;
+  const { oop: oopDetail, forfeit, netCost } = scenarioCost(ctx, sc, a);
 
   const math: MathStep[] = [
     premiumStep(ctx),
@@ -111,14 +115,19 @@ export function evaluateScenario(ctx: PlanContext, sc: Scenario, h: Household, c
   ];
   if (ctx.account && (ctx.employeeHsa > 0 || ctx.fsaElection > 0)) {
     const amt = ctx.account === 'HSA' ? ctx.employeeHsa : ctx.fsaElection;
+    const limitTier = h.coverageTier === 'self' ? 'selfOnly' : 'family';
+    const catchUp = h.age >= 55 ? cfg.hsa.catchUpAge55 : 0;
     math.push({
       label: `${ctx.account} contribution`,
-      formula: ctx.account === 'HSA' ? 'H = your HSA amount, capped at limit + catch-up − employer HSA' : 'F = your FSA election, capped at the IRS limit',
-      shown: fmtMoney(amt),
+      formula: ctx.account === 'HSA' ? 'H = min(your amount, IRS limit + catch-up − employer HSA)' : 'F = your FSA election, capped at the IRS limit',
+      shown:
+        ctx.account === 'HSA'
+          ? `min(${fmtMoney(h.hsaContribution)}, ${fmtMoney(cfg.hsa.contributionLimit[limitTier])} + ${fmtMoney(catchUp)} − ${fmtMoney(ctx.employerHsa)}) = ${fmtMoney(amt)}`
+          : fmtMoney(amt),
       result: amt,
       params:
         ctx.account === 'HSA'
-          ? refsFor(cfg, `hsa.contributionLimit.${h.coverageTier === 'self' ? 'selfOnly' : 'family'}`, ...(h.age >= 55 ? ['hsa.catchUpAge55'] : []))
+          ? refsFor(cfg, `hsa.contributionLimit.${limitTier}`, ...(h.age >= 55 ? ['hsa.catchUpAge55'] : []))
           : refsFor(cfg, 'healthFsa.salaryReductionLimit'),
     });
     math.push(...taxSteps(`${ctx.account} tax savings`, ctx.taxAfterPremium, ctx.taxAfterAll, ctx.accountTaxSavings, h, cfg));

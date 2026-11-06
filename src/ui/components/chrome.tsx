@@ -5,6 +5,7 @@ import { Menu, Moon, Sun } from 'lucide-react';
 export const NAV = [
   { href: '#situation', label: 'Situation' },
   { href: '#answer', label: 'Result' },
+  { href: '#hsa', label: 'HSA' },
   { href: '#plans', label: 'Plans' },
   { href: '#chart', label: 'Chart' },
   { href: '#break-even', label: 'Break-even' },

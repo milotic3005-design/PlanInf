@@ -4,7 +4,6 @@
  */
 import type {
   ComparisonResult,
-  HsaHint,
   Household,
   Issue,
   Plan,
@@ -13,10 +12,8 @@ import type {
   Scenario,
   ScenarioId,
 } from './types';
-import { limitTierFor } from './types';
 import { buildPlanContext, evaluateScenario } from './netCost';
 import { breakEven, chartMaxSpend, cheapestBySpend, combinedCurve } from './breakeven';
-import { hsaAllowed, hsaMaxEmployee } from './accounts';
 import { unverifiedParams } from './config';
 import { blockingProblems, InputError, inputIssues } from './validate';
 
@@ -68,19 +65,6 @@ export function compare({ household: h, plans, scenarios, config: cfg }: Compare
     for (let j = i + 1; j < ctxs.length; j++) breakEvens.push(breakEven(ctxs[i]!, ctxs[j]!, visits, h.allowedPerVisit, chartMax));
   }
 
-  // SPEC Q4: with no HSA amount entered, show what contributing the max would save.
-  const hsaHints: HsaHint[] =
-    h.hsaContribution > 0
-      ? []
-      : ctxs
-          .filter((c) => hsaAllowed(c.plan, cfg, h.coverageTier))
-          .map((c) => {
-            const max = hsaMaxEmployee(cfg, limitTierFor(h.coverageTier), h.age, c.employerHsa);
-            const withMax = buildPlanContext(c.plan, { ...h, hsaContribution: max }, cfg);
-            return { planId: c.plan.id, maxContribution: max, taxSavingsAtMax: withMax.accountTaxSavings.total };
-          })
-          .filter((x) => x.maxContribution > 0);
-
   // De-duplicate issues (the same plan check can be raised once per scenario context).
   const seen = new Set<string>();
   const issues: Issue[] = [];
@@ -107,7 +91,6 @@ export function compare({ household: h, plans, scenarios, config: cfg }: Compare
       scenarios.flatMap((s) => (typeof s.allowedSpend === 'number' ? [s.allowedSpend] : [])),
     ),
     cheapestBySpend: cheapestBySpend(ctxs, visits, h.allowedPerVisit, chartMax),
-    hsaHints,
     issues,
     unverifiedParams: unverifiedParams(cfg),
   };

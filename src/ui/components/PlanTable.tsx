@@ -127,7 +127,7 @@ export function PlanTable({ plans, issues, slotOf, tier, onChange, onAdd, onRemo
     <div className="space-y-4">
       <div className="rounded-xl border hairline bg-surface p-4 shadow-card sm:p-5">
         <h3 className="text-sm font-semibold text-ink">Prefill from your benefits guide</h3>
-        <p className={hintCls}>Loads the three MultiCare medical plans for 2027 (guide pages 10, 16, 18, 19) and sets 24 paychecks a year. Replaces the plans below.</p>
+        <p className={hintCls}>Loads the three MultiCare medical plans for 2027 (guide pages 10, 16, 18, 19) and sets 24 paychecks a year and tax year 2027. Replaces the plans below.</p>
         <div className="mt-3 flex flex-wrap items-end gap-3">
           <Select
             label="Employment status"

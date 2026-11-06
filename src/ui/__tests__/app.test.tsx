@@ -25,12 +25,14 @@ afterEach(cleanup);
 
 async function renderApp() {
   render(<App />);
-  await screen.findByText('Show as table'); // lazy chart chunk loaded
+  await screen.findByText('Show as table', {}, { timeout: 15000 }); // lazy chart chunk loaded
 }
 
 const hero = () => screen.queryByTestId('hero-net')?.textContent;
 
-describe('app', () => {
+// Full-page renders plus axe take about 2 s here, and much longer on a busy machine, so these
+// tests get a generous budget. The default 5 s timed out under CPU load with nothing actually wrong.
+describe('app', { timeout: 30000 }, () => {
   it('has no axe accessibility violations, with every disclosure open', async () => {
     await renderApp();
     for (const b of screen.getAllByRole('button', { expanded: false })) await act(async () => fireEvent.click(b));
@@ -104,6 +106,27 @@ describe('app', () => {
     expect((screen.getByLabelText('Paychecks per year') as HTMLSelectElement).value).toBe('24');
     expect(screen.getByText(/Loaded from the MultiCare 2027 benefits guide/)).toBeTruthy();
     expect(screen.queryByText('SAMPLE DATA')).toBeNull();
+  });
+
+  it('HSA slider: MultiCare single, $150 a paycheck, drives the math and the HSA field', async () => {
+    await renderApp();
+    await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Load MultiCare 2027 plans' })));
+    const slider = screen.getByRole('slider', { name: 'Your HSA contribution per paycheck' }) as HTMLInputElement;
+    expect(slider.max).toBe('155'); // $3,700 ÷ 24 = $154.17, rounded up so the last stop is the max
+    expect(screen.getByTestId('hsa-net').textContent).toBe('$2,324');
+
+    await act(async () => fireEvent.change(slider, { target: { value: '150' } }));
+    expect(screen.getByTestId('hsa-per-paycheck').textContent).toBe('$150.00');
+    expect(screen.getByTestId('hsa-net').textContent).toBe('$1,257');
+    expect((screen.getByLabelText('HSA contribution (optional)', { exact: false }) as HTMLInputElement).value).toBe('3600');
+
+    await act(async () => fireEvent.change(slider, { target: { value: '155' } }));
+    expect(screen.getByTestId('hsa-per-paycheck').textContent).toBe('$154.17');
+    expect(screen.getByTestId('hsa-net').textContent).toBe('$1,227');
+    expect(screen.getByText(/MyConnected Care stays cheapest at \$3,000 of care/)).toBeTruthy();
+
+    await act(async () => fireEvent.click(screen.getByRole('button', { name: 'None' })));
+    expect(screen.getByTestId('hsa-net').textContent).toBe('$2,324');
   });
 
   it('makes no network requests and stores nothing', async () => {

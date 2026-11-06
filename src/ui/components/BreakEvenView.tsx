@@ -6,7 +6,7 @@
 import { useMemo } from 'react';
 import type { ComparisonResult, Plan } from '../../engine/types';
 import { fmtMoney0 } from '../../engine/money';
-import { SLOT_INK, SLOT_VARS } from '../model';
+import { SLOT_VARS } from '../model';
 import { Disclosure, Swatch } from './fields';
 import { MathPanel } from './MathPanel';
 import { useWidth } from './useWidth';
@@ -86,7 +86,7 @@ export function BreakEvenView({ result, plans, slotOf, expectedSpend }: Props) {
             const slot = slotOf(s.planId);
             const blockPx = ((s.to - s.from) / max) * width - 2;
             const label = name(s.planId);
-            const fits = width > 0 && textWidth(label) + 16 <= blockPx;
+            const fits = width > 0 && textWidth(label) + 32 <= blockPx; // text + chip padding + block padding
             return (
               <div
                 key={`${s.from}-${s.planId}`}
@@ -95,9 +95,8 @@ export function BreakEvenView({ result, plans, slotOf, expectedSpend }: Props) {
                 title={`${label}: cheapest from ${fmtMoney0(s.from)} to ${fmtMoney0(s.to)}`}
               >
                 {fits && (
-                  <span className="whitespace-nowrap text-xs font-semibold" style={{ color: SLOT_INK[slot] }}>
-                    {label}
-                  </span>
+                  // Text on its own chip: white on a series color can't reach 4.5:1 for every hue.
+                  <span className="rounded bg-surface-raised px-1.5 py-0.5 text-xs font-semibold whitespace-nowrap text-ink">{label}</span>
                 )}
               </div>
             );

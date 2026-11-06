@@ -72,8 +72,8 @@ The one way data could leave is if you click a source link in a math panel. That
 All tax parameters live in one editable file per year:
 
 ```
-src/config/tax-years/2026.json   complete: the default year
-src/config/tax-years/2027.json   partial: the IRS had not published 2027 brackets on 2026-11-04
+src/config/tax-years/2026.json   complete
+src/config/tax-years/2027.json   complete: the default year (Rev. Proc. 2026-35 and 2026-24)
 ```
 
 Every parameter looks like this:
@@ -88,24 +88,35 @@ Every parameter looks like this:
 
 **The loader refuses a year with any problem.** If any value is `null` (unpublished), has no listed source, has no pinpoint, has the wrong type, or has a bracket table whose computed "$N plus" base amounts don't match the IRS-printed ones (a transcription typo), the whole year shows as unavailable in the tax-year menu, with the reasons listed under **Tax values used**.
 
-### Filling in 2027 when the IRS publishes it
+### Adding the next tax year
 
-1. Find the 2027 inflation-adjustment Revenue Procedure in the [IRS newsroom](https://www.irs.gov/newsroom). It usually appears in October or November.
-2. In `2027.json`, fill each `null`:
+1. Copy the newest file to `<year>.json` and add it to [`src/config/index.ts`](src/config/index.ts).
+2. Find that year's inflation-adjustment Revenue Procedure in the [IRS newsroom](https://www.irs.gov/newsroom). It usually appears in October or November; HSA limits come earlier, in their own Rev. Proc. Update:
    - the standard deduction for each filing status, and the age 65/blind add-on;
    - the four bracket tables, including `printedBaseAmounts` (the "$N plus" figures exactly as printed);
-   - the health FSA limit and carryover.
+   - the health FSA limit and carryover, the HSA and HDHP limits, the Social Security wage base, and the state payroll rates.
 
-   Point each one at a new `sources` entry for that Rev. Proc. and set its `pinpoint`.
-3. Replace the draft Pub 15 citation for the Social Security wage base ($192,300) with the final edition, or with SSA's page.
-4. Run `npm test`. The loader re-checks the transcription. Then set `userVerified: true` on each value you checked.
-5. The app now defaults to the newest complete year.
+   Point each one at a `sources` entry and set its `pinpoint` and `userVerified: false`.
+3. Run `npm test`. The loader re-checks the transcription. Then set `userVerified: true` on each value you checked.
+4. The app defaults to the newest complete year.
+
+For 2027, the Social Security wage base still cites the draft Pub 15 ($192,300). Replace it with the final edition or SSA's page when you verify it.
 
 ### Adding a state
 
 v1 ships Washington plus an **"Another state"** option where you enter a flat marginal rate and say whether the state taxes HSA contributions. A state with wage income tax brackets needs a new `incomeTax` type in the engine (`src/engine/config.ts` and `taxes.ts`); the loader rejects anything but `"none"` today. A no-income-tax state can be added to `states` with only its payroll taxes, each with `reducedBySection125` and a source.
 
 ---
+
+## HSA simulator
+
+The **HSA simulator** section has a per-paycheck slider that sets your HSA contribution for the whole page: rankings, chart, and break-even points all follow it. Beside the slider it shows, for the chosen scenario, what changes compared with contributing nothing: net cost, tax saved, take-home pay per paycheck, and the HSA balance left after this year's care. It also shows the contribution at which the plan becomes cheapest.
+
+Your contribution is not a cost, because the money stays yours. Only the tax it saves lowers net cost. The maximum is the IRS limit, plus the catch-up at 55+, minus employer money.
+
+## MultiCare template
+
+**Load MultiCare 2027 plans** in Your plans fills in the three medical plans from the 2027 benefits guide (pages 10, 16, 18, 19) for full-time or part-time status, and sets 24 paychecks and tax year 2027. The app lists what its model simplifies after loading. The numbers are in [`src/data/multicare2027.ts`](src/data/multicare2027.ts).
 
 ## How the math works (short version)
 
@@ -130,10 +141,11 @@ Full spec with formulas F1–F14 and a hand-worked example: [`docs/SPEC.md`](doc
 
 | Area | What is covered |
 |---|---|
-| Tax config | Each 2026 value has a source; bracket transcription is checked against IRS-printed amounts; 2027 is refused while values are null; bad sources and out-of-range rates are rejected |
+| Tax config | Each 2026 value has a source; bracket transcription is checked against IRS-printed amounts; a year with null values is refused; bad sources and out-of-range rates are rejected |
 | Taxes | Bracket edges, deductions that cross brackets, the Social Security wage base and straddling it, Additional Medicare (MFJ), income below the standard deduction, custom states, WA payroll taxes |
 | Out-of-pocket | Copays, deductible, coinsurance, the cap, 0% coinsurance, family vs. individual, one-person family spending |
 | Accounts | HSA limits with employer money, the catch-up exactly at 55, the IRS HDHP test per tier, the embedded-deductible rule, FSA limit and forfeit |
+| HSA simulator | Hand-checked MultiCare numbers: limits by tier, age, and status; tax saved, take-home change, HSA balance after care; agreement with the main comparison; the contribution needed to become cheapest |
 | Worked example | All 9 net costs match the hand calculation to the cent; the three break-evens ($2,984.44, $2,773.53, $13,943.65) |
 | Break-even | No crossing, tie ranges, multiple crossings, the FSA-forfeit kink |
 | Validation | Blocking errors (NaN, negative, out-of-range) and every warning code |

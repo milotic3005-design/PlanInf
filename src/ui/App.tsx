@@ -17,6 +17,7 @@ import { Card, Callout, PageSection, Pill } from './components/ui';
 import { HouseholdForm } from './components/HouseholdForm';
 import { PlanTable } from './components/PlanTable';
 import { Summary } from './components/Summary';
+import { HsaSimulator } from './components/HsaSimulator';
 import { BreakEvenView } from './components/BreakEvenView';
 import { Breakdown } from './components/Breakdown';
 import { TaxDataPanel } from './components/TaxDataPanel';
@@ -30,7 +31,8 @@ const SAMPLE_SLOTS: Record<string, number> = { 'sample-ppo': 0, 'sample-hmo': 1,
 
 export function App() {
   const years = useMemo(() => loadTaxYears(), []);
-  const [year, setYear] = useState(() => latestUsableYear(years)?.year ?? years[0]!.year);
+  const defaultYear = latestUsableYear(years)?.year ?? years[0]!.year;
+  const [year, setYear] = useState(defaultYear);
   const [form, setForm] = useState<FormState>(DEFAULT_FORM);
   const [plans, setPlans] = useState<Plan[]>(samplePlans);
   // Color follows the plan, not its position: each plan keeps its slot when others are removed.
@@ -43,6 +45,7 @@ export function App() {
   const set = <K extends keyof FormState>(k: K, v: FormState[K]) => setForm((f) => ({ ...f, [k]: v }));
   const slotOf = (id: string) => slots[id] ?? 0;
   const scenarios = useMemo(() => toScenarios(form), [form]);
+  const household = useMemo(() => (config ? toHousehold(form, config.taxYear) : null), [config, form]);
 
   const computed = useMemo(() => {
     if (!config) return { problems: [`Tax year ${year} is not available.`] } as const;
@@ -82,6 +85,7 @@ export function App() {
     setPlans(ps);
     setSlots(Object.fromEntries(ps.map((p, i) => [p.id, i])));
     setForm((f) => ({ ...f, payPeriodsPerYear: MULTICARE_2027.payPeriodsPerYear, fsaCarryoverAllowed: MULTICARE_2027.fsaCarryoverAllowed }));
+    setYear(MULTICARE_2027.taxYear);
     setOpenMath(new Set());
   }
   function resetPlans() {
@@ -181,11 +185,13 @@ export function App() {
                   config={config}
                   onLoadExample={() => {
                     setForm(WORKED_EXAMPLE_FORM);
+                    setYear(2026); // the spec's hand calculation uses 2026 tax values
                     resetPlans();
                     setScenarioId('expected');
                   }}
                   onReset={() => {
                     setForm(DEFAULT_FORM);
+                    setYear(defaultYear);
                     resetPlans();
                     setOpenMath(new Set());
                   }}
@@ -220,9 +226,28 @@ export function App() {
               </PageSection>
             )}
 
+            {result && household && config && (
+              <PageSection
+                id="hsa"
+                number="03"
+                title="HSA simulator"
+                description="Slide your per-paycheck contribution. Every result on this page follows it, including the chart and break-even points."
+              >
+                <HsaSimulator
+                  household={household}
+                  plans={plans}
+                  scenarios={scenarios}
+                  scenarioId={scenarioId}
+                  config={config}
+                  slotOf={slotOf}
+                  onChange={(annual) => set('hsaContribution', annual)}
+                />
+              </PageSection>
+            )}
+
             <PageSection
               id="plans"
-              number="03"
+              number="04"
               title="Your plans"
               description="Copy the employee share of each premium and the in-network cost-sharing numbers from your benefits guide."
             >
@@ -243,7 +268,7 @@ export function App() {
               <>
                 <PageSection
                   id="chart"
-                  number="04"
+                  number="05"
                   title="Cost by amount of care"
                   description="Net after-tax cost of each plan as your year's medical spending rises. Hover, tap, or focus the chart and use the arrow keys."
                 >
@@ -252,18 +277,18 @@ export function App() {
                   </Suspense>
                 </PageSection>
 
-                <PageSection id="break-even" number="05" title="Break-even points" description="The spending levels where one plan becomes cheaper than another.">
+                <PageSection id="break-even" number="06" title="Break-even points" description="The spending levels where one plan becomes cheaper than another.">
                   <BreakEvenView result={result} plans={plans} slotOf={slotOf} expectedSpend={form.expectedSpend} />
                 </PageSection>
 
-                <PageSection id="breakdown" number="06" title="Line-by-line breakdown" description="Every number, with its formula and sources, for the scenario selected above.">
+                <PageSection id="breakdown" number="07" title="Line-by-line breakdown" description="Every number, with its formula and sources, for the scenario selected above.">
                   <Breakdown result={result} plans={plans} scenarioId={scenarioId} slotOf={slotOf} openMath={openMath} toggleMath={toggleMath} />
                 </PageSection>
               </>
             )}
 
             {config && (
-              <PageSection id="tax-data" number="07" title="Tax values used" description="Every parameter, with its value, primary source, and where in the source it appears.">
+              <PageSection id="tax-data" number="08" title="Tax values used" description="Every parameter, with its value, primary source, and where in the source it appears.">
                 <TaxDataPanel config={config} years={years} />
               </PageSection>
             )}
